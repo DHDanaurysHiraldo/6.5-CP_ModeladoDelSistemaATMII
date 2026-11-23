@@ -1,4 +1,4 @@
-﻿namespace _6_5_CP_ModeladoDelSistemaATMII
+﻿namespace CP65_ModeladoDelSistemaATMII
 {
     internal class Program
     {
@@ -8,3 +8,4 @@
         }
     }
 }
+    
