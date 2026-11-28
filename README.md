@@ -56,6 +56,10 @@ La justificación detallada de cada relación está en [`docs/analisis.md`](docs
 | `DispensadorEfectivo` | Debe haber efectivo suficiente | `InvalidOperationException` |
 | `Transaccion` | El monto debe ser mayor que cero | `ArgumentOutOfRangeException` |
 
+## Documentación del código
+
+Las clases públicas del modelo, sus constructores, propiedades y métodos están documentados con **comentarios XML** (`///`). Visual Studio los muestra en IntelliSense al usar cada miembro, e indican sus restricciones (por ejemplo, que el monto debe ser mayor que cero) y las excepciones que puede lanzar. Los comentarios de línea (`//`) se reservan para explicar decisiones de diseño que no se deducen del código, como por qué el `ATM` expone el efectivo disponible y no el dispensador.
+
 ## Estructura del proyecto
 
 ```
@@ -63,7 +67,7 @@ La justificación detallada de cada relación está en [`docs/analisis.md`](docs
 │   ├── ATM.cs
 │   ├── DispensadorEfectivo.cs
 │   ├── Transaccion.cs
-│   └── Retiro.cs                  # 🚧 pendiente
+│   └── Retiro.cs
 ├── docs/
 │   └── analisis.md                # Análisis de clases y justificación de relaciones
 ├── Program.cs                     # Simulación del retiro (🚧 pendiente)
