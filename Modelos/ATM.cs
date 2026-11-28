@@ -38,4 +38,16 @@ internal class ATM
         CodigoCajero = codigoCajero;
         _dispensador = new DispensadorEfectivo(efectivoInicial);
     }
+    /// <summary>
+    /// Realiza un retiro de efectivo: crea un <see cref="Retiro"/> y lo ejecuta con el dispensador del cajero.
+    /// Si alguna validación falla, el efectivo disponible no se modifica.
+    /// </summary>
+    /// <param name="monto">Monto a retirar. Debe ser mayor que cero.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Si el monto es menor o igual a cero.</exception>
+    /// <exception cref="InvalidOperationException">Si el dispensador no tiene efectivo suficiente.</exception>
+    public void RealizarRetiro(decimal monto)
+    {
+        Retiro retiro = new Retiro(monto);
+        retiro.Ejecutar(_dispensador);
+    }
 }
