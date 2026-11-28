@@ -1,14 +1,20 @@
 ﻿namespace CP65_ModeladoDelSistemaATMII.Modelos;
 
-internal class Transaccion
+internal abstract class Transaccion
 {
-    public string Tipo { get; set; } = string.Empty;
-    public decimal Monto { get; set; }
-    public DateTime Fecha { get; set; }
+    public decimal Monto { get; private set; }
+    public DateTime Fecha { get; private set; }
 
+    protected Transaccion(decimal monto)
+    {
+        if (monto <= 0)
+            throw new ArgumentOutOfRangeException(nameof(monto), "Operación inválida: el monto de la transacción debe ser mayor que cero.");
+        Monto = monto;
+        Fecha = DateTime.Now;
 
+    }
     public string MostrarDetalle()
     {
-        return $"{Fecha:dd/MM/yyyy HH:mm} | {Tipo,-10} | RD$ {Monto,10:N2}";
+        return $"{Fecha:dd/MM/yyyy HH:mm} | {GetType().Name,-10} | RD$ {Monto,10:N2}";
     }
 }
