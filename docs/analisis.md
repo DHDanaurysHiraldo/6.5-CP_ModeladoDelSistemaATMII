@@ -17,10 +17,13 @@
 | Elemento | Detalle |
 |---|---|
 | **Responsabilidad** | Representar los datos comunes a toda operación bancaria. |
-| **Constructor** | `Transaccion(decimal monto)` — valida que el monto sea mayor que cero, lo asigna y registra la fecha y hora actuales. |
+| **Tipo de clase** | Abstracta (`abstract`): no se pueden crear objetos de `Transaccion` directamente, solo de sus clases derivadas. |
+| **Constructor** | `protected Transaccion(decimal monto)` — valida que el monto sea mayor que cero, lo asigna y registra la fecha y hora actuales. Es `protected` porque solo lo invocan las clases derivadas mediante `base(...)`. |
 | **Propiedades** | Monto(private set), Fecha(private set) |
 | **Métodos** | MostrarDetalle() : string |
 | **Relación entre clases** | Clase base de Retiro. |
+
+> **¿Por qué abstracta?** En el dominio bancario no existe una transacción "genérica": toda transacción es de un tipo concreto (retiro, depósito, consulta). Declarar `Transaccion` como `abstract` hace que el compilador impida `new Transaccion(...)` y obliga a crear siempre un tipo concreto, como `Retiro`.
 
 ### Retiro
 
@@ -59,7 +62,8 @@ La relación entre `Retiro` y `DispensadorEfectivo` **no** es de composición. E
 ## 3. Cambios respecto al caso 5.5
 
 - **`Transaccion` pasa a ser una clase base.** En el caso 5.5 era una clase independiente; en el 6.5 reúne los datos comunes de las transacciones y `Retiro` hereda de ella.
-- **Se elimina la propiedad `Tipo`.** Ahora el tipo de transacción lo indica la propia clase del objeto (`Retiro`). Conservar un `string` con el tipo duplicaría la información y permitiría inconsistencias, como un `Retiro` con `Tipo = "Depósito"`.
+- **`Transaccion` se declara `abstract`.** En el 5.5 se podían crear objetos `Transaccion`; en el 6.5 solo pueden existir sus clases derivadas, y su constructor es `protected`.
+- **Se elimina la propiedad `Tipo`.** Ahora el tipo de transacción lo indica la propia clase del objeto (`Retiro`), y `MostrarDetalle()` lo obtiene con `GetType().Name`. Conservar un `string` con el tipo duplicaría la información y permitiría inconsistencias, como un `Retiro` con `Tipo = "Depósito"`.
 - **Se reemplazan los `set` públicos por constructores y `private set`.** En el 5.5 las propiedades se asignaban desde `Program.cs`; en el 6.5 los datos ingresan por el constructor, que además los valida, y solo la propia clase puede modificarlos (encapsulamiento).
 - **`ATM` y `DispensadorEfectivo` pasan del análisis a la implementación.** En el 5.5 solo figuraban en el análisis; en el 6.5 se implementan para demostrar la relación de composición.
 - **`Cuenta` queda fuera del alcance.** El modelo se limita a las clases indicadas en la actividad. En consecuencia, el retiro valida el monto y el efectivo disponible en el dispensador, pero no el saldo del cliente.
