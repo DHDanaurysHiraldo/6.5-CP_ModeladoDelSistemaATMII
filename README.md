@@ -2,8 +2,6 @@
 
 Modelo simplificado del cajero automático de Deitel que demuestra **herencia** y **composición** en C#, como parte del **Programa FullStack .NET Cloud Developer** (Semana 6 — Programación Orientada a Objetos II).
 
-> 🚧 **En desarrollo.** Las secciones marcadas como pendientes se completarán al finalizar la implementación.
-
 ## Objetivo
 
 Analizar y representar relaciones de herencia y composición utilizando un modelo simplificado del sistema ATM, implementarlas en C# y simular un retiro de efectivo en consola.
@@ -34,7 +32,53 @@ La justificación detallada de cada relación está en [`docs/analisis.md`](docs
 
 ## Diagrama de clases
 
-🚧 *Pendiente.*
+```mermaid
+classDiagram
+    direction LR
+
+    class ATM {
+        -DispensadorEfectivo _dispensador
+        +string CodigoCajero
+        +decimal EfectivoDisponible
+        +ATM(string codigoCajero, decimal efectivoInicial)
+        +RealizarRetiro(decimal monto) void
+    }
+
+    class DispensadorEfectivo {
+        +decimal EfectivoDisponible
+        +DispensadorEfectivo(decimal efectivoInicial)
+        -AlcanzaEfectivo(decimal monto) bool
+        +DispensarEfectivo(decimal monto) void
+    }
+
+    class Transaccion {
+        <<abstract>>
+        +decimal Monto
+        +DateTime Fecha
+        #Transaccion(decimal monto)
+        +MostrarDetalle() string
+    }
+
+    class Retiro {
+        +Retiro(decimal monto)
+        +Ejecutar(DispensadorEfectivo dispensador) void
+    }
+
+    Transaccion <|-- Retiro : hereda
+    ATM "1" *-- "1" DispensadorEfectivo : contiene
+    ATM ..> Retiro : crea
+    Retiro ..> DispensadorEfectivo : usa
+```
+
+| Notación | Significado |
+|---|---|
+| Triángulo hueco (`Retiro` → `Transaccion`) | Herencia |
+| Rombo relleno del lado de `ATM` | Composición, con multiplicidad 1 a 1 |
+| Línea punteada con flecha | Dependencia: `ATM` crea un `Retiro`; `Retiro` usa el dispensador que recibe |
+| `+` / `-` / `#` | `public` / `private` / `protected` |
+| `«abstract»` | Clase abstracta |
+
+También disponible como imagen en [`docs/diagrama.png`](docs/diagrama.png).
 
 ## Requerimientos técnicos
 
@@ -69,8 +113,11 @@ Las clases públicas del modelo, sus constructores, propiedades y métodos está
 │   ├── Transaccion.cs
 │   └── Retiro.cs
 ├── docs/
-│   └── analisis.md                # Análisis de clases y justificación de relaciones
-├── Program.cs                     # Simulación del retiro (🚧 pendiente)
+│   ├── analisis.md                # Análisis de clases y justificación de relaciones
+│   ├── diagrama.png               # Diagrama de clases
+│   └── evidencias/
+│       └── ejecucion.png          # Captura de la ejecución
+├── Program.cs                     # Simulación de retiros en consola
 ├── CP65_ModeladoDelSistemaATMII.csproj
 └── CP65_ModeladoDelSistemaATMII.slnx
 ```
@@ -87,7 +134,21 @@ dotnet run
 
 ## Ejecución
 
-🚧 *Pendiente: salida en consola y captura de la simulación del retiro.*
+`Program.cs` crea un cajero `ATM-001` con RD$10,000.00 y simula cinco retiros consecutivos. Cada intento se procesa dentro de un bloque `try/catch/finally`: los `catch` atrapan por separado las excepciones de monto inválido (`ArgumentOutOfRangeException`) y de efectivo insuficiente (`InvalidOperationException`), y el `finally` muestra el efectivo disponible después de cada intento, haya sido exitoso o no.
+
+| Retiro | Resultado | Efectivo después | Qué demuestra |
+|---|---|---|---|
+| RD$2,000.00 | Retiro exitoso | RD$8,000.00 | Herencia, composición y uso trabajando juntas |
+| RD$9,000.00 | Rechazado: no hay efectivo suficiente | RD$8,000.00 | Validación del dispensador; el efectivo no cambia |
+| RD$-500.00 | Rechazado: monto inválido | RD$8,000.00 | Validación heredada de `Transaccion` |
+| RD$0.00 | Rechazado: monto inválido | RD$8,000.00 | El cero también se rechaza (`<= 0`) |
+| RD$8,000.00 | Retiro exitoso | RD$0.00 | Valor límite: se puede retirar todo el efectivo disponible |
+
+Ningún retiro rechazado modifica el efectivo: todas las validaciones ocurren antes de descontarlo.
+
+![Ejecución de la simulación](docs/evidencias/ejecucion.png)
+
+> El texto `(Parameter 'monto')` en los rechazos por monto inválido lo agrega .NET automáticamente al mensaje de `ArgumentOutOfRangeException`, e identifica el parámetro que no cumplió la regla.
 
 ## Alcance
 
